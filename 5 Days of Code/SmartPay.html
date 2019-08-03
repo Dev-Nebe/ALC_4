@@ -139,7 +139,7 @@
 
 	<div data-credit-card="" class="mdc-card mdc-card-outlined">
 		<div class="mdc-card__primary-action">
-			<img data-card-type="" src="[http://placehold.it/120x60.png?text=Card](http://placehold.it/120x60.png?text=Card)">
+			<img data-card-type="" src="https://placehold.it/120x60.png?text=Card">
 			<div data-cc-digits="">
 				<input type="text" size="4" placeholder="----">
 				<input type="text" size="4" placeholder="----">
@@ -234,15 +234,116 @@
           }
         });
       };
-      
+
+      const appState = {};
+	
+	  const formatAsMoney = (amount, buyerCountry) => {
+		  //This filters the countries to see if the buyer country is in the list of countries provided
+		  const userCountry = countries.filter(x => x.country === buyerCountry);
+		  if (userCountry.length === 0) {userCountry.append(countries[0]);}
+		  //Destructure the userCountry array to get the object containing the formatting details for the country
+		  const [countryDetails] = userCountry;
+		  //Format the currency properly
+		  return amount.toLocaleString(`en-${countryDetails.code}`, {style: 'currency', currency: countryDetails.currency});
+	  };
+
+	  const flagIfInvalid = (field, isValid) => {
+		  if (isValid === true){document.querySelector(field).classList.remove("is-invalid");}
+		  else {document.querySelector(field).classList.add("is-invalid");}
+	  };
+
+	  const expiryDateFormatIsValid = (field) => {
+		  /*Utilize regex to test if the card expiry date is in the MM/YY format*/
+		  const regex = /^((0[1-9])|(1[0-2]))\/\d{2}$/g
+		  if (regex.test(field) === true){return true;}
+		  else {return false;}
+	  };
+
+	  const detectCardType = (first4Digits) => {};
+	  
+	  const dateIsInFuture = (date) => {
+		  //grab today's date and the entered date, modify them, convert to numbers then finally see if the entered date is greater than today's date
+		const dateToday = new Date();
+		let currentMonth =  (dateToday.getMonth() + 1).toString();
+		if (currentMonth.length < 2){currentMonth = `0${currentMonth}`;}
+		const currentYear = dateToday.getFullYear().toString().slice(2, 4);
+		const enteredDate = date.toString().split("/");
+		const modifiedEnteredDate = `${(enteredDate[1])}${(enteredDate[0])}`;
+		const modifiedCurrentDate = `${currentYear}${currentMonth}`
+		if (parseInt(modifiedCurrentDate, 10) > parseInt(modifiedEnteredDate, 10)){return false;}
+		else {return true;}
+		  };
+
+	  const validateCardExpiryDate = (date) => {
+		  const expiryDateField = "[data-cc-info] input:nth-child(2)";
+		  if (expiryDateFormatIsValid(date) === true && dateIsInFuture(date) === true){flagIfInvalid(expiryDateField, true);
+		  return true;}
+		  else {flagIfInvalid(expiryDateField, false);
+		  return false;}
+	  };
+	  
+	  const validateCardHolderName = (name) => {
+		  //Use regex to validate the Name format (Name surname)), if true, confirm that each is at least characters long
+		  const validateNameFormat = (name) => {
+			  const regexName = /\w+\s{1}\w+/g;
+			  return regexName.test(name);
+		  };
+		  const atLeastThreeCharactersEach = (name) => {
+			  const nameArray = name.toString().split(" ");
+			  if(nameArray[0].length > 2 && nameArray[1].length > 2){return true;}
+			  else {return false;}
+		  };
+		  //Determine name validity
+		  const cardHolderNameField = "[data-cc-info] input:nth-child(1)";
+		  if (validateNameFormat(name) === true && atLeastThreeCharactersEach(name) === true) {
+			  flagIfInvalid(cardHolderNameField, true);
+		  }
+		  else {flagIfInvalid(cardHolderNameField, false);}
+	  };
+	  
+	  const validateCardNumber = () => {};
+
+	  const validatePayment = () => {
+		  validateCardNumber();
+		  const holderName = document.querySelector("[data-cc-info] input:nth-child(1)").textContent;
+		  validateCardHolderName(holderName.toString());
+		  const expiryDate = document.querySelector("[data-cc-info] input:nth-child(2)").textContent;
+		  validateCardExpiryDate(expiryDate.toString());
+	  };
+
+	  const acceptCardNumbers = (event, fieldIndex) => {};
+
+
+	  const uiCanInteract = () => {
+		  document.querySelector("[data-cc-digits] > input").focus();
+		  document.querySelector("[data-pay-btn]").addEventListener("click", validatePayment);
+		  billHype();
+	  };
+	  
+	  const displayCartTotal = ({results}) => {
+		  const [data] = results;
+		  const {itemsInCart, buyerCountry} = data;
+		  appState.items = itemsInCart;
+		  appState.country = buyerCountry;
+		  appState.bill = itemsInCart.reduce((total, currentItem) => total + currentItem.price * currentItem.qty, 0);
+		  appState.billFormatted =  formatAsMoney(appState.bill, appState.country);
+		  document.querySelector("[data-bill]").textContent = appState.billFormatted;
+		  appState.cardDigits = [];
+		  uiCanInteract();
+	  };
+
 	  const fetchBill = () => {
         const apiHost = 'https://randomapi.com/api';
 		const apiKey = '006b08a801d82d0c9824dcfdfdfa3b3c';
 		const apiEndpoint = `${apiHost}/${apiKey}`;
-        
+        fetch(apiEndpoint)
+		.then(response => response.json())
+		.then(data => displayCartTotal(data))
+		.catch(error => console.log(error));
       };
       
       const startApp = () => {
+		  fetchBill();
       };
 
       startApp();
