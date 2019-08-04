@@ -274,16 +274,24 @@
 		else {return true;}
 		  };
 
-	  const validateCardExpiryDate = (date) => {
+	  const validateCardExpiryDate = () => {
+		  const date = document.querySelector(".mdc-card__primary-action [data-cc-info] > input:nth-child(2)").value; 
 		  const expiryDateField = "[data-cc-info] input:nth-child(2)";
-		  if (expiryDateFormatIsValid(date) === true && dateIsInFuture(date) === true){flagIfInvalid(expiryDateField, true);
+		  console.log(`${date} was passed to the validateCardExpiryFunction`);
+		  if (expiryDateFormatIsValid(date) === true && dateIsInFuture(date) === true){
+			  console.log("Valid expiry date")
+			  flagIfInvalid(expiryDateField, true);
 		  return true;}
-		  else {flagIfInvalid(expiryDateField, false);
+		  else {
+			  console.log("Invalid expiry date")
+			  flagIfInvalid(expiryDateField, false);
 		  return false;}
 	  };
 	  
-	  const validateCardHolderName = (name) => {
+	  const validateCardHolderName = () => {
+		  const name = document.querySelector(".mdc-card__primary-action [data-cc-info] > input").value;
 		  //Use regex to validate the Name format (Name surname)), if true, confirm that each is at least characters long
+		  console.log(`${name} was passed to the validateCardHolderName function`);
 		  const validateNameFormat = (name) => {
 			  const regexName = /\w+\s{1}\w+/g;
 			  return regexName.test(name);
@@ -294,21 +302,28 @@
 			  else {return false;}
 		  };
 		  //Determine name validity
-		  const cardHolderNameField = "[data-cc-info] input:nth-child(1)";
+		  const cardHolderNameField = "[data-cc-info] input";
 		  if (validateNameFormat(name) === true && atLeastThreeCharactersEach(name) === true) {
+			  console.log("Valid card name")
 			  flagIfInvalid(cardHolderNameField, true);
+			  return true;
 		  }
-		  else {flagIfInvalid(cardHolderNameField, false);}
+		  else {
+			  console.log("Invalid card name");
+			  flagIfInvalid(cardHolderNameField, false);
+		  return false;}
 	  };
 	  
 	  const validateCardNumber = () => {};
 
+	  //const cardNumber = ;
+	  //const cardHolderName = document.querySelector(".mdc-card__primary-action [data-cc-info] > input").value;
+	  //const cardExpiryDate = document.querySelector(".mdc-card__primary-action [data-cc-info] > input:nth-child(2)").value;
+
 	  const validatePayment = () => {
 		  validateCardNumber();
-		  const holderName = document.querySelector("[data-cc-info] input:nth-child(1)").textContent;
-		  validateCardHolderName(holderName.toString());
-		  const expiryDate = document.querySelector("[data-cc-info] input:nth-child(2)").textContent;
-		  validateCardExpiryDate(expiryDate.toString());
+		  validateCardHolderName();
+		  validateCardExpiryDate();
 	  };
 
 	  const acceptCardNumbers = (event, fieldIndex) => {};
