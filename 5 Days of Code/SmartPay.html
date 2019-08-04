@@ -254,20 +254,34 @@
 
 	  const expiryDateFormatIsValid = (field) => {
 		  /*Utilize regex to test if the card expiry date is in the MM/YY format*/
-		  const regex = /^((0[1-9])|(1[0-2]))\/\d{2}$/g
+		  const regex = /^((0[1-9])|(1[0-2])|([1-9]))\/\d{2}$/g
 		  if (regex.test(field) === true){return true;}
 		  else {return false;}
 	  };
 
 	  const detectCardType = (first4Digits) => {};
 	  
-	  const dateIsInFuture = (date) => {
+	  const dateIsInFuture = (input) => {
 		  //grab today's date and the entered date, modify them, convert to numbers then finally see if the entered date is greater than today's date
+		const date = input.toString();
+		console.log(`Date: ${date}`)
 		const dateToday = new Date();
+		//const inputMonth = parseInt(date.toString().split('/')[0], 10);
+		//console.log(`Input Month: ${inputMonth}`);
+		//if (inputMonth > 12 || inputMonth < 1) {return false;}
+		//const inputYear = parseInt(date.toString().split('/')[1], 10);
+		//console.log(`Input year: ${inputYear}`);
+		//const twoDigitFullYear = parseInt(currDate.getFullYear().toString().substr(-2), 10);
+		//console.log(`Two Digit Full Year: ${twoDigitFullYear}`);
+		//const twoDigitMonth = currDate.getMonth() + 1;
+		//console.log(`Two Digit Month: ${twoDigitMonth}`);
+		//return (inputYear > twoDigitFullYear) || (inputYear === twoDigitFullYear && inputMonth > twoDigitMonth);
+
 		let currentMonth =  (dateToday.getMonth() + 1).toString();
 		if (currentMonth.length < 2){currentMonth = `0${currentMonth}`;}
 		const currentYear = dateToday.getFullYear().toString().slice(2, 4);
-		const enteredDate = date.toString().split("/");
+		let enteredDate = date.toString().split("/");
+		if (enteredDate[0].length < 2){enteredDate[0] = `0${enteredDate[0]}`;}
 		const modifiedEnteredDate = `${(enteredDate[1])}${(enteredDate[0])}`;
 		const modifiedCurrentDate = `${currentYear}${currentMonth}`
 		if (parseInt(modifiedCurrentDate, 10) > parseInt(modifiedEnteredDate, 10)){return false;}
@@ -277,7 +291,7 @@
 	  const validateCardExpiryDate = () => {
 		  const date = document.querySelector(".mdc-card__primary-action [data-cc-info] > input:nth-child(2)").value; 
 		  const expiryDateField = "[data-cc-info] input:nth-child(2)";
-		  console.log(`${date} was passed to the validateCardExpiryFunction`);
+		  console.log(`${date.toString()} was passed to the validateCardExpiryFunction`);
 		  if (expiryDateFormatIsValid(date) === true && dateIsInFuture(date) === true){
 			  console.log("Valid expiry date")
 			  flagIfInvalid(expiryDateField, true);
@@ -298,7 +312,7 @@
 		  };
 		  const atLeastThreeCharactersEach = (name) => {
 			  const nameArray = name.toString().split(" ");
-			  if(nameArray[0].length > 2 && nameArray[1].length > 2){return true;}
+			  if(nameArray.length === 2 && nameArray[0].length > 2 && nameArray[1].length > 2){return true;}
 			  else {return false;}
 		  };
 		  //Determine name validity
