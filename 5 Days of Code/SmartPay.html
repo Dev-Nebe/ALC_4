@@ -342,11 +342,33 @@
 
 	  const acceptCardNumbers = (event, fieldIndex) => {};
 
+	  const smartInput = (event, fieldIndex) => {
+		  //setTimeout(event.preventDefault()/*What should be here?*/, 500);
+	  };
+
+	  const smartCursor = (event, fieldIndex, fields) => {};
+
+
+	  const enableSmartTyping = () => {
+		 //const cardDigitsFirstInput= document.querySelector("[data-cc-digits] > input");
+		 //const cardDigitsSecondInput = document.querySelector("[data-cc-digits] > input:nth-child(2)");
+		 //const cardDigitsThirdInput = document.querySelector("[data-cc-digits] > input:nth-child(3)");
+		 //const cardDigitsFourthInput = document.querySelector("[data-cc-digits] > input:nth-child(4)");
+		 //const cardNameInput = document.querySelector("[data-cc-info] > input");
+		 //const cardExpDateInput = document.querySelector("[data-cc-info] > input:nth-child(2)")
+		  
+		  const fields = document.querySelectorAll(".mdc-card__primary-action input"); //Array into which all input fields are collected
+
+		  fields.forEach((field, index, fields) => {field.addEventListener("keyup", (event) => smartCursor(event, index, fields));});
+		  fields.forEach((field, index, fields) => {field.addEventListener("keydown", (event) => smartInput(event, index));});
+	  };
+
 
 	  const uiCanInteract = () => {
 		  document.querySelector("[data-cc-digits] > input").focus();
 		  document.querySelector("[data-pay-btn]").addEventListener("click", validatePayment);
 		  billHype();
+		  enableSmartTyping();
 	  };
 	  
 	  const displayCartTotal = ({results}) => {
