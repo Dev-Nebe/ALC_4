@@ -66,3 +66,58 @@ console.log(double(11), square(11));
 
 
 //Task 8: Write reverse, a function that reverses the arguments of a binary function
+const reverse = (funct) => {return (x,y) => funct(y,x);};
+let bus = reverse(sub);
+console.log(bus(3, 2));
+
+
+//Task 9: Write a function composeu that takes two unary functions and returns a unary function that calls them both
+const composeu = (func1, func2) => {
+    return (x) => {return func2(func1(x));};
+};
+console.log(composeu(double, square)(5));
+
+
+//Task 10: Write a function composeb that takes two binary functions and returns a function that calls them both
+const composeb = (funct1, funct2) => {
+    return (x, y, z) => {return funct2(funct1(x,y),z);};
+};
+
+console.log(composeb(add, mul)(2, 3, 7));
+
+
+//Task 11: Write a limit function that allows a binary function to be called a limited number of times
+const limit = (func, nlimit) => {
+    let counter = 0;
+    return (...x) => {
+        if (counter < nlimit){counter+=1; return func(...x);}
+        else {console.log(`You've reached the call limit for this function: ${counter}`); return undefined;}
+    }; 
+};
+let add_ltd = limit(add, 3);
+console.log(add_ltd(3, 4));
+
+
+//Task 12: Write a from function that produces a generator that will produce a series of values
+const from = (x) => {
+    return () => x++;
+};
+//let index = from(8);
+//console.log(index(), index(), index());
+
+
+//Task 13: Write a to function that takes a generator and an end value and returns a generator that produce numbers up that limit
+const to = (gen, endVal) => {
+    return () => {
+        if (endVal > 1) {--endVal; return gen();}
+        else {return undefined;}
+    };
+};
+let index = to(from(1), 3);
+console.log(index(), index(), index(), index());
+
+
+//Task 14: Write a fromTo function that produces a generator that will produce valies in a range.
+const fromTo = () => {
+    return () => {};
+}
