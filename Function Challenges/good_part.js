@@ -117,7 +117,58 @@ let index = to(from(1), 3);
 console.log(index(), index(), index(), index());
 
 
-//Task 14: Write a fromTo function that produces a generator that will produce valies in a range.
-const fromTo = () => {
-    return () => {};
-}
+//Task 14: Write a fromTo function that produces a generator that will produce values in a range.
+const fromTo = (startVal, endVal) => {
+        return () => {if (startVal < endVal){startVal++; return startVal-1;}
+        else {return undefined;}};
+    };
+
+const indices = fromTo(1, 5);
+console.log(indices(), indices(), indices(), indices(), indices(), indices());
+
+
+//Task 15: Write an element function that takes an array and a generator and returns a generator that will produce elments from the array. Task 15b: then modify it to return all items in the array if gen isn't provided
+const element = (array, gen) => {
+    let x = 0;
+    array.push(undefined);    
+    return () => {
+        if (gen === undefined) {x++; return array[x-1];} //Instead of manually returning each element of the array, you can simply provide a value for gen and the function will contine to work as expected i.e. if (gen === undefined) {gen = fromTo(0, array.length);}, then you proceed to return the portion below the else statement. Do this for all values gen that are not functions
+        else {
+            let index = gen();
+            if (index !== undefined) {return array[index];} //Note 1
+        } 
+    };
+};
+
+//Note 1: The code will actually work most of the time even if the "if" statement is left out. However, things will break if there's actually a value called "undefined" within the array object which you pass to "element". When this happens, the value of undefined will be returned instead of "undefined" as expected.
+
+let ele = element(['a', 'b', 'c', 'd']);
+console.log(ele(), ele(), ele(), ele(), ele());
+
+
+//Task 16: Write a collect function that takes a generator and an array and produces a function that will collect the results in the array.
+const collect = (gen, array) => {
+    let result;
+    return () => {
+        result = gen();
+        if (result !== undefined) {array.push(result);}
+        return result;
+    };
+};
+let array = [];
+let col = collect(fromTo(0, 4), array);
+console.log(col(), col(), col(), col(), col(), col(), array);
+
+
+//Task 17: Write a filter function that takes a generator and a predicate and produces a generator that produces only the  values approved by the predicate
+// const third = (value) => {return (value % 3) === 0;};
+// const filter = (gen, predicate) => {
+//     let value = gen();
+//     return () => {
+//         if (predicate(value) === true) {return value;}
+//         else {return undefined;}
+//     };
+// };
+
+// let fil = filter(fromTo(0,5), third);
+// console.log(fil(), fil(), fil());
