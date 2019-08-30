@@ -45,13 +45,13 @@ let curry = (binFunc, arg) => {
 
 //Task 6: Show three ways to build a new functionality (which increments a number by 1) using the above functions without writing any new function
 let inc = addf(1);
-console.log(inc(5), inc(inc(5)));
+// console.log(inc(5), inc(inc(5)));
 
 let inc2 = liftf(add)(1);
-console.log(inc2(5), inc2(inc2(5)));
+// console.log(inc2(5), inc2(inc2(5)));
 
 let inc3 = curry(add, 1);
-console.log(inc3(5), inc3(inc3(5)));
+// console.log(inc3(5), inc3(inc3(5)));
 //THE CODE ABOVE ILLUSTRATES THE FIRST RULE OF FUNCTIONAL PROGRAMMIG: LET THE FUNCTIONS DO THE WORK. NO NEED TO REWRITE CODE IF THERE'S ALREADY A FUNCTION THAT CAN DO THE WORK.
 
 
@@ -62,20 +62,20 @@ const twice = (binFunc) => {
 
 let double = twice(add);
 let square = twice(mul);
-console.log(double(11), square(11));
+// console.log(double(11), square(11));
 
 
 //Task 8: Write reverse, a function that reverses the arguments of a binary function
 const reverse = (funct) => {return (x,y) => funct(y,x);};
 let bus = reverse(sub);
-console.log(bus(3, 2));
+// console.log(bus(3, 2));
 
 
 //Task 9: Write a function composeu that takes two unary functions and returns a unary function that calls them both
 const composeu = (func1, func2) => {
     return (x) => {return func2(func1(x));};
 };
-console.log(composeu(double, square)(5));
+// console.log(composeu(double, square)(5));
 
 
 //Task 10: Write a function composeb that takes two binary functions and returns a function that calls them both
@@ -83,7 +83,7 @@ const composeb = (funct1, funct2) => {
     return (x, y, z) => {return funct2(funct1(x,y),z);};
 };
 
-console.log(composeb(add, mul)(2, 3, 7));
+// console.log(composeb(add, mul)(2, 3, 7));
 
 
 //Task 11: Write a limit function that allows a binary function to be called a limited number of times
@@ -95,7 +95,7 @@ const limit = (func, nlimit) => {
     }; 
 };
 let add_ltd = limit(add, 3);
-console.log(add_ltd(3, 4));
+// console.log(add_ltd(3, 4));
 
 
 //Task 12: Write a from function that produces a generator that will produce a series of values
@@ -114,7 +114,7 @@ const to = (gen, endVal) => {
     };
 };
 let index = to(from(1), 3);
-console.log(index(), index(), index(), index());
+// console.log(index(), index(), index(), index());
 
 
 //Task 14: Write a fromTo function that produces a generator that will produce values in a range.
@@ -124,7 +124,7 @@ const fromTo = (startVal, endVal) => {
     };
 
 const indices = fromTo(1, 5);
-console.log(indices(), indices(), indices(), indices(), indices(), indices());
+console.log(indices(), indices(), indices());
 
 
 //Task 15: Write an element function that takes an array and a generator and returns a generator that will produce elments from the array. Task 15b: then modify it to return all items in the array if gen isn't provided
@@ -143,7 +143,7 @@ const element = (array, gen) => {
 //Note 1: The code will actually work most of the time even if the "if" statement is left out. However, things will break if there's actually a value called "undefined" within the array object which you pass to "element". When this happens, the value of undefined will be returned instead of "undefined" as expected.
 
 let ele = element(['a', 'b', 'c', 'd']);
-console.log(ele(), ele(), ele(), ele(), ele());
+// console.log(ele(), ele(), ele(), ele(), ele());
 
 
 //Task 16: Write a collect function that takes a generator and an array and produces a function that will collect the results in the array.
@@ -157,18 +157,38 @@ const collect = (gen, array) => {
 };
 let array = [];
 let col = collect(fromTo(0, 4), array);
-console.log(col(), col(), col(), col(), col(), col(), array);
+// console.log(col(), col(), col(), col(), col(), col(), array);
 
 
-//Task 17: Write a filter function that takes a generator and a predicate and produces a generator that produces only the  values approved by the predicate
-// const third = (value) => {return (value % 3) === 0;};
-// const filter = (gen, predicate) => {
-//     let value = gen();
-//     return () => {
-//         if (predicate(value) === true) {return value;}
-//         else {return undefined;}
-//     };
-// };
+// Task 17: Write a filter function that takes a generator and a predicate and produces a generator that produces only the  values approved by the predicate
+const third = (value) => {return (value % 3) === 0;};
 
-// let fil = filter(fromTo(0,5), third);
-// console.log(fil(), fil(), fil());
+const filter = (gen, predicate) => {
+    return () => {
+        // collect(gens, array)(); console.log(array); console.log(counter);
+        // if (array[counter] === undefined) {return undefined;}
+        // for (counter; predicate(array[counter]) == true; counter++){}
+        // counter++;
+        // return array[counter-1];
+        let value;
+        do {value = gen();} while (value !== undefined && !predicate(value));
+        return value;    
+    };
+};
+
+let fil = filter(fromTo(0,5), third);
+console.log(fil(), fil(), fil(), fil());
+
+//Task 18: Write a concat function that takes two generators and produces a generator that combines the sequences
+const concat = (gen1, gen2) => {
+    let gen1Val;
+    let gen2Val;
+    return () => {
+        gen1Val = gen1();
+        if (gen1Val === undefined) {gen2Val = gen2(); return gen2Val;}
+        return gen1Val;
+    };
+};
+
+let con = concat(fromTo(0, 3), fromTo(0,2));
+console.log(con(), con(), con(), con(), con(), con());
