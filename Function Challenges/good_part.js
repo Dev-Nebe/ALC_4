@@ -124,7 +124,7 @@ const fromTo = (startVal, endVal) => {
     };
 
 const indices = fromTo(1, 5);
-console.log(indices(), indices(), indices());
+// console.log(indices(), indices(), indices());
 
 
 //Task 15: Write an element function that takes an array and a generator and returns a generator that will produce elments from the array. Task 15b: then modify it to return all items in the array if gen isn't provided
@@ -177,7 +177,8 @@ const filter = (gen, predicate) => {
 };
 
 let fil = filter(fromTo(0,5), third);
-console.log(fil(), fil(), fil(), fil());
+// console.log(fil(), fil(), fil(), fil());
+
 
 //Task 18: Write a concat function that takes two generators and produces a generator that combines the sequences
 const concat = (gen1, gen2) => {
@@ -191,4 +192,101 @@ const concat = (gen1, gen2) => {
 };
 
 let con = concat(fromTo(0, 3), fromTo(0,2));
-console.log(con(), con(), con(), con(), con(), con());
+// console.log(con(), con(), con(), con(), con(), con());
+
+
+// Task 19: Make a function gensymf that makes a function that generates unique symbols
+const gensymf = (input) => {
+    // let num = 0;
+    let num = from(1);
+    return () => {
+        // num++;
+        // return input+num.toString();
+        return input.toString()+num();
+    };
+};
+
+let geng = gensymf('G');
+let genh = gensymf('H');
+
+// console.log(geng(), genh(), geng(), genh());
+
+
+// Task 20: Make a function fibonaccif that returns a generator that will return the next fibonacci number
+const fibonaccif = (x, y) => {
+    let fibArray = [x, y];
+    let n = 0;
+    return () => {
+        if (n < 2) {return fibArray[n++];}
+        let length = fibArray.length;
+        fibArray.push(add(fibArray[length-2], fibArray[length-1])); console.log(fibArray);
+        return fibArray[length]; //The length returned here is the length before the new value was pushed to the array
+    };
+};
+
+const fib = fibonaccif(9, 10);
+// console.log(fib(), fib(), fib());
+
+
+
+// NOW WE START DEALING WITH OBJECTS
+
+
+// Task 21: Write a counter function that returns an object containint two functions that implement an up/down counter, hiding the counter. Constraint: Do not use 'this' or 'global' variables
+const counter = (x) => {
+    return {
+        up: ()=>{return ++x;},
+        down: ()=>{return --x;}
+    };
+};
+
+let object = counter(10);
+let up = object.up;
+let down = object.down;
+
+// console.log(up(), down(), down(), up());
+
+
+// Task 22: Make a revocable function that takes a binary function, and returs an object containing an invoke function that con invoke the binary function, and a revoke function that disables the invoke function
+const revocable = (binaryFunction) => {
+    return {
+        invoke: (x, y) => {
+            if (binaryFunction !== undefined){return binaryFunction(x,y);} //This step is necessary because calling a revoked function throws an error
+        },
+        revoke: () => {binaryFunction = undefined;}
+    };
+};
+
+let rev = revocable(add);
+let add_rev =  rev.invoke;
+console.log(add_rev(3, 4));
+rev.revoke();
+// console.log(add_rev(5, 7));
+
+// Bonus Challenge: Write a function m that takes a value and an optional source string and returns them in an object
+const m = (value, source) => {
+    return {
+        value: value,
+        source: (typeof source === 'string') ? source : String(value)
+    };
+};
+
+
+//Task 23: Write a function addm that takes two m objects and returns an m object
+const addm = (first, second) => {
+    // return {
+    //     value: first.value + second.value,
+    //     source: `(${first.source}+${second.source})`
+    // };  //Doing it like this is the hard way
+    return m(first.value+second.value, `(${first.source}+${second.source})`); //This the functional way to do it
+};
+
+console.log(JSON.stringify(addm(m(3), m(4))));
+console.log(JSON.stringify(addm(m(1), m(Math.PI, 'pi'))));
+
+// //Task 24: Write a function liftm that takes a binary function and a string and returns a function that acts on m objects
+// const liftm = (binaryFunc, str) => {
+//     return (a, b) => {
+//         return
+//     };
+// };
