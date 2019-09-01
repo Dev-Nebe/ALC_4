@@ -259,8 +259,8 @@ const revocable = (binaryFunction) => {
 
 let rev = revocable(add);
 let add_rev =  rev.invoke;
-console.log(add_rev(3, 4));
-rev.revoke();
+// console.log(add_rev(3, 4));
+// rev.revoke();
 // console.log(add_rev(5, 7));
 
 // Bonus Challenge: Write a function m that takes a value and an optional source string and returns them in an object
@@ -281,12 +281,36 @@ const addm = (first, second) => {
     return m(first.value+second.value, `(${first.source}+${second.source})`); //This the functional way to do it
 };
 
-console.log(JSON.stringify(addm(m(3), m(4))));
-console.log(JSON.stringify(addm(m(1), m(Math.PI, 'pi'))));
+// console.log(JSON.stringify(addm(m(3), m(4))));
+// console.log(JSON.stringify(addm(m(1), m(Math.PI, 'pi'))));
 
-// //Task 24: Write a function liftm that takes a binary function and a string and returns a function that acts on m objects
-// const liftm = (binaryFunc, str) => {
-//     return (a, b) => {
-//         return
-//     };
+
+//Task 24: Write a function liftm that takes a binary function and a string and returns a function that acts on m objects
+const liftm = (binaryFunc, op) => {
+    return (a, b) => {
+        if (typeof(a) === 'number'){a = m(a);}
+        if (typeof(b) === 'number'){b = m(b);}
+        return m(
+            binaryFunc(a.value, b.value), `(${a.source}${op}${b.source})`
+        );
+    };
+};
+
+let addmm = liftm(add, '+');
+console.log(JSON.stringify(addmm(3, 4)));
+
+
+// // Task 25: Write a function exp that evaluates simple array expressions
+// const exp = (arr) => {
+//     if (typeof(arr) === 'number'){return arr;}
+//     return arr[0](exp(arr[1]), exp(arr[2]));
 // };
+
+// // let sae = [mul, 5, 11];
+// // console.log(exp(sae));
+
+// let nae = [
+//     Math.sqrt, [[add, [square, 3], [square, 4]]]
+// ];
+
+// console.log(exp(nae));
