@@ -300,17 +300,80 @@ let addmm = liftm(add, '+');
 console.log(JSON.stringify(addmm(3, 4)));
 
 
-// // Task 25: Write a function exp that evaluates simple array expressions
-// const exp = (arr) => {
-//     if (typeof(arr) === 'number'){return arr;}
-//     return arr[0](exp(arr[1]), exp(arr[2]));
+// Task 25: Write a function exp that evaluates simple array expressions
+// const exp = (value) => {
+//     return (Array.isArray(value)) ? value[0](
+//         exp(value[1]),
+//         exp(value[2])
+//     ) : value;
 // };
 
-// // let sae = [mul, 5, 11];
-// // console.log(exp(sae));
+const exp = (arr) => {
+    if (Array.isArray(arr)){return arr[0](exp(arr[1]), exp(arr[2]));}
+    else {return arr;}
+};
 
-// let nae = [
-//     Math.sqrt, [[add, [square, 3], [square, 4]]]
-// ];
+// let sae = [mul, 5, 11];
+// console.log(exp(sae));
+
+let nae = [
+    Math.sqrt, 
+    [
+        add, 
+        [square, 3], 
+        [square, 4]]
+];
 
 // console.log(exp(nae));
+
+
+// Task 26: Write a function addg that adds from many invocations, until it sees an empty invocation
+let result = 0;
+
+const addg = (first) => {
+    let more = (next) => {
+        if (next === undefined){return first;}
+        first += next;
+        return more;
+    };
+    if (first !== undefined){
+        return more;
+    }
+    return undefined;   
+};
+
+// console.log(addg(), addg(2)(), addg(2)(7)(), addg(3)(0)(4)(), addg(1)(2)(4)(8)());
+
+
+// Task 27: Write a function liftg that will take a binary function and apply it to many invocations
+const liftg = (binaryFunc) => {
+    return (x) => {
+        const innerInner = (y) => {
+            if (y === undefined) {return x;}
+            x = binaryFunc(x, y); 
+            return innerInner;};
+        if (x !== undefined){return innerInner;}   
+    };
+    // let innerLiftG = (x) => {
+    //     if (x===undefined){return undefined;}
+    //     return ()=> {};answer = binaryFunc(x);
+    //     return innerLiftG;
+    // };
+};
+
+// console.log(liftg(mul)(), liftg(mul)(3)(), liftg(mul)(3)(0)(4)(), liftg(mul)(1)(2)(4)(8)());
+
+
+// Task 28: Write a function arrayg that will build an array from many invocations
+const arrayg = (element) => {
+    let arr = [];
+    if (element === undefined) {return arr;}
+    const more = (nextElement) => {
+        if (nextElement !== undefined) {arr.push(nextElement); return more;}
+        return arr;
+    };
+    arr.push(element);
+    return more;
+};
+
+console.log(arrayg(), arrayg(3)(), arrayg(3)(4)(5)());
