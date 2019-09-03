@@ -297,7 +297,7 @@ const liftm = (binaryFunc, op) => {
 };
 
 let addmm = liftm(add, '+');
-console.log(JSON.stringify(addmm(3, 4)));
+// console.log(JSON.stringify(addmm(3, 4)));
 
 
 // Task 25: Write a function exp that evaluates simple array expressions
@@ -376,4 +376,54 @@ const arrayg = (element) => {
     return more;
 };
 
-console.log(arrayg(), arrayg(3)(), arrayg(3)(4)(5)());
+// console.log(arrayg(), arrayg(3)(), arrayg(3)(4)(5)());
+
+// Task 29: Make a function continuize that takes a unary function, and returns a function that takes a callback and an argument
+const continuize = (unaryFunction) => {
+    return(callback, argument) => {return callback(unaryFunction(argument));};
+};
+
+let sqrtc = continuize(Math.sqrt);
+// console.log(sqrtc(console.log, 81));
+
+
+//USING FUNCTIONS TO CONSTRUCT OBJECTS
+// const constructor = (init) => {
+//     let that = other_constructor(init);
+//     let member;
+//     const method = ()=> {};
+//     that.method = method;
+//     return that;
+// };
+
+
+// Task 30: Make an array wrapper object with methods get, store, and append, such that an attacker cannot get access to the private array.
+const vector = () => {
+    let array = [];
+    return {
+        get: (i)=>array[i],
+        store: (i, v)=>array[i]=v,
+        append: (v)=>array.push(v)
+    };
+};
+
+//Tests
+const myVector = vector();
+myVector.append(7);
+myVector.store(1, 8);
+// console.log(myVector.get(0));
+// console.log(myVector.get(1));
+
+//Security attack. I'm not sure what this attack does though
+let stash;
+myVector.store('push', ()=>stash=this);
+myVector.append();
+// console.log(stash);
+
+//Task 31: Make a function that makes a publish/subscribe object. It will reliably deliver all publications to all subscibers in the right order
+const pubsub = () => {
+    let subscibers = []; 
+    return {
+         subscribe: (subsciber)=>{subscibers.push(subsciber);}, 
+         publish: (publication)=>{subscibers.forEach(x=>x(publication));}};
+};
